@@ -110,19 +110,130 @@ c.  Identify which country or countries have exactly 9 customers.
 
     The answer is also "United Kingdom" with method 2.
 
-## Running Code
+## Problem 3
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
-
-```{r}
-1 + 1
-```
-
-You can add options to executable code like this
+Download the "US - 500 Records" data and import it into R. 
 
 ```{r}
-#| echo: false
-2 * 2
+setwd("/Users/tyn/Documents/R/ProblemSet3")
+data <- read.csv("us-500.csv", header = TRUE)
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+a.  What proportion of email addresses are hosted at a domain with TLD ".net"?
+
+    ```{r}
+    num_row <- nrow(data)
+    proportion_net <- sum(grepl("net", data$email)) / num_row
+    proportion_net
+    ```
+
+    The proportion is $14.6\%$.
+
+b.  What proportion of email addresses have at least one non alphanumeric character in them? 
+
+    ```{r}
+    alpnum <-grepl("^[[:alnum:]]+@", data$email)
+    nonalpnum_prop <- 1 - sum(alpnum) / num_row
+    nonalpnum_prop
+    ```
+
+    The proportion is $50.6\%$.
+
+c.  What is the most common area code amongst all phone numbers?
+
+    We first check whether for each person, the area code of "phone 1" and "phone 2" are the same.
+
+    ```{r}
+    all.equal(substr(data$phone1, 1, 3), substr(data$phone2, 1, 3))
+    ```
+
+    Since the result is "TRUE", we only need to find out the most common area code for "phone 1".
+
+    ```{r}
+    area_code <- substr(data$phone1, 1, 3)
+    area_code_table <- table(area_code)
+    most_common_code <- names(area_code_table[which.max(area_code_table)])
+    most_common_code
+    ```
+
+    The most common area code is "973".
+
+d.  Produce a histogram of the log of the apartment numbers for all addresses.
+
+    We first extract all apartment number.
+
+    ```{r}
+    address <- strsplit(data$address, " ")
+    apart <- rep(NA, num_row)
+
+    for (i in 1: num_row){
+      apart[i] <- address[[i]][length(address[[i]])]
+    }
+    apart_num<- apart[grep("#", apart)]
+
+    length <- length(apart_num)
+    for (i in 1: length){
+      apart_num[i] <- substr(apart_num[i], 2, nchar(apart_num[i]))
+    }
+    apart_num <- as.numeric(apart_num)
+    ```
+
+    Then we produce the histogram.
+
+    ```{r}
+    hist(log(apart_num), xlab = "log of apartment number")
+    ```
+
+e.  [Benford's law](https://en.wikipedia.org/wiki/Benford's_law) is an observation about the distribution of the leading digit of real numerical data. Examine whether the apartment numbers appear to follow Benford's law. Do you think the apartment numbers would pass as real data?
+
+    We first find the leading number for each element in the vector "apart_num".
+
+    ```{r}
+    apart_char <- as.character(apart_num)
+    lead_dig <- as.numeric(substr(apart_char, 1, 1))
+    ```
+
+    Then we construct a vector to store the expected value for each number in sample size of 500.
+
+    ```{r}
+    expected_prob <- c(0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046)
+
+    observed_value <- as.vector(table(lead_dig))
+    ```
+
+    ```{r}
+    library(ggplot2)
+
+    benford_plot <- data.frame(
+      x = observed_value,
+      y = expected_prob
+    )
+
+    plot <- ggplot(data = benford_plot, aes(x = x, y = y)) +
+      geom_line() +
+      labs(title = "Benford's Law", x = "observed value", y = "expected probability") +
+      theme_minimal() +
+      theme(axis.text = element_text(size = 12), axis.title = element_text(size = 14))
+
+    # 显示图形
+    print(plot)
+    ```
+
+    From the plot we obtain, the distribution is different from the Benford's distribution. It does not seem to follow the Benford's Law, so I don't think it would pass as real data.
+
+f.  Repeat your analysis of Benford's law on the *last* digit of the street number.
+
+    We first find the street number of each person.
+
+    ```{r}
+    street <- rep(NA, num_row)
+    for (i in 1: num_row){
+      street[i] <- address[[i]][1]
+    }
+
+    last_digit <- rep(NA, num_row)
+
+    for (i in 1: num_row){
+      last_digit[i] <- as.numeric(substr(street[i], nchar(street[i]), nchar(street[i])))
+    }
+    ```
