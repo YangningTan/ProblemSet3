@@ -215,7 +215,6 @@ e.  [Benford's law](https://en.wikipedia.org/wiki/Benford's_law) is an observat
       theme_minimal() +
       theme(axis.text = element_text(size = 12), axis.title = element_text(size = 14))
 
-    # 显示图形
     print(plot)
     ```
 
@@ -236,4 +235,23 @@ f.  Repeat your analysis of Benford's law on the *last* digit of the street nu
     for (i in 1: num_row){
       last_digit[i] <- as.numeric(substr(street[i], nchar(street[i]), nchar(street[i])))
     }
+    ```
+
+    ```{r}
+    count_last <- as.vector(table(last_digit))
+
+    library(ggplot2)
+
+    benford_plot <- data.frame(
+      x = count_last,
+      y = rep(0.1, 10)
+    )
+
+    plot <- ggplot(data = benford_plot, aes(x = x, y = y)) +
+      geom_line() +
+      labs(title = "street numbers", x = "last digit", y = "expected probability") +
+      theme_minimal() +
+      theme(axis.text = element_text(size = 12), axis.title = element_text(size = 14))
+
+    print(plot)
     ```
