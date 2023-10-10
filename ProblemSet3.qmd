@@ -5,6 +5,8 @@ format: html
 editor: visual
 ---
 
+link: git\@github.com:YangningTan/ProblemSet3.git
+
 ## Problem 2
 
 Load the "sakila" database discussed in class into SQLite.
@@ -132,9 +134,9 @@ a.  What proportion of email addresses are hosted at a domain with TLD ".net"?
 b.  What proportion of email addresses have at least one non alphanumeric character in them? 
 
     ```{r}
-    alpnum <-grepl("^[[:alnum:]]+@", data$email)
-    nonalpnum_prop <- 1 - sum(alpnum) / num_row
-    nonalpnum_prop
+    alpha_num <-grepl("^[[:alnum:]]+@", data$email)
+    non_alpha_num_prop <- 1 - sum(alpha_num) / num_row
+    non_alpha_num_prop
     ```
 
     The proportion is $50.6\%$.
@@ -190,7 +192,7 @@ e.  [Benford's law](https://en.wikipedia.org/wiki/Benford's_law) is an observat
 
     ```{r}
     apart_char <- as.character(apart_num)
-    lead_dig <- as.numeric(substr(apart_char, 1, 1))
+    lead_digit <- as.numeric(substr(apart_char, 1, 1))
     ```
 
     Then we construct a vector to store the expected value for each number in sample size of 500.
@@ -198,7 +200,7 @@ e.  [Benford's law](https://en.wikipedia.org/wiki/Benford's_law) is an observat
     ```{r}
     expected_prob <- c(0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046)
 
-    observed_value <- as.vector(table(lead_dig))
+    observed_value <- as.vector(table(lead_digit))
     ```
 
     ```{r}
@@ -211,7 +213,7 @@ e.  [Benford's law](https://en.wikipedia.org/wiki/Benford's_law) is an observat
 
     plot <- ggplot(data = benford_plot, aes(x = x, y = y)) +
       geom_line() +
-      labs(title = "Benford's Law", x = "observed value", y = "expected probability") +
+      labs(title = "apartment numbers", x = "observed value", y = "expected probability") +
       theme_minimal() +
       theme(axis.text = element_text(size = 12), axis.title = element_text(size = 14))
 

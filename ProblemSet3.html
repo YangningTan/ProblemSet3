@@ -103,6 +103,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<p>link: git@github.com:YangningTan/ProblemSet3.git</p>
 <section id="problem-2" class="level2">
 <h2 class="anchored" data-anchor-id="problem-2">Problem 2</h2>
 <p>Load the “sakila” database discussed in class into SQLite.</p>
@@ -242,9 +243,9 @@ Attaching package: 'dplyr'</code></pre>
 <p>The proportion is <span class="math inline">\(14.6\%\)</span>.</p></li>
 <li><p>What proportion of email addresses have at least one non alphanumeric character in them?&nbsp;</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>alpnum <span class="ot">&lt;-</span><span class="fu">grepl</span>(<span class="st">"^[[:alnum:]]+@"</span>, data<span class="sc">$</span>email)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>nonalpnum_prop <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">sum</span>(alpnum) <span class="sc">/</span> num_row</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>nonalpnum_prop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>alpha_num <span class="ot">&lt;-</span><span class="fu">grepl</span>(<span class="st">"^[[:alnum:]]+@"</span>, data<span class="sc">$</span>email)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>non_alpha_num_prop <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">sum</span>(alpha_num) <span class="sc">/</span> num_row</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>non_alpha_num_prop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.506</code></pre>
 </div>
@@ -297,13 +298,13 @@ Attaching package: 'dplyr'</code></pre>
 <p>We first find the leading number for each element in the vector “apart_num”.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>apart_char <span class="ot">&lt;-</span> <span class="fu">as.character</span>(apart_num)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>lead_dig <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">substr</span>(apart_char, <span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>lead_digit <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">substr</span>(apart_char, <span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Then we construct a vector to store the expected value for each number in sample size of 500.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>expected_prob <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.301</span>, <span class="fl">0.176</span>, <span class="fl">0.125</span>, <span class="fl">0.097</span>, <span class="fl">0.079</span>, <span class="fl">0.067</span>, <span class="fl">0.058</span>, <span class="fl">0.051</span>, <span class="fl">0.046</span>)</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>observed_value <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">table</span>(lead_dig))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>observed_value <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">table</span>(lead_digit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
@@ -315,7 +316,7 @@ Attaching package: 'dplyr'</code></pre>
 <span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> benford_plot, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
 <span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Benford's Law"</span>, <span class="at">x =</span> <span class="st">"observed value"</span>, <span class="at">y =</span> <span class="st">"expected probability"</span>) <span class="sc">+</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"apartment numbers"</span>, <span class="at">x =</span> <span class="st">"observed value"</span>, <span class="at">y =</span> <span class="st">"expected probability"</span>) <span class="sc">+</span></span>
 <span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>), <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>))</span>
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
