@@ -1,0 +1,128 @@
+---
+title: "ProblemSet3"
+author: "Yangning Tan"
+format: html
+editor: visual
+---
+
+## Problem 2
+
+Load the "sakila" database discussed in class into SQLite.
+
+```{r}
+library(DBI)
+library(RSQLite)
+sakila <- dbConnect(RSQLite :: SQLite(), "/Users/tyn/Downloads/sakila_master.db")
+```
+
+a.  Aside from English, what language is most common for films? Answer this with a single SQL query.
+
+    ```{r}
+    dbGetQuery(sakila, "SELECT l.name, language_id, COUNT(language_id)
+                        FROM film f
+                        JOIN language l USING(language_id)
+                        WHERE language_id != 1
+                        GROUP BY l.name, language_id
+                        ORDER BY COUNT(language_id)")
+    ```
+
+    As a matter of fact, all films are in English. No other language is used.
+
+b.  What genre of movie is the most common in the data, and how many movies are of this genre?
+
+    **Method 1**: use SQL query or queries to extract the appropriate table(s), then use regular R to answer the question.
+
+    ```{r}
+    # extract tables from our database
+    table_film <- dbGetQuery(sakila, " SELECT * FROM film")
+
+    table_fcate <-dbGetQuery(sakila, "SELECT * FROM film_category")
+
+    table_cate <- dbGetQuery(sakila, "SELECT * FROM category")
+    ```
+
+    ```{r}
+    library(dplyr)
+    # join the first two tables
+    join1 <- inner_join(table_film, table_fcate, by = "film_id")
+
+    # join the table "join1" with the third table
+    join_final <- inner_join(join1, table_cate, by = "category_id")
+    ```
+
+    ```{r}
+    frequency_table <- table(join_final$category_id)
+    number_movie <- max(frequency_table)
+    max_category_id <- as.integer(names(frequency_table[which.max(frequency_table)]))
+    vector <- join_final$name[which(join_final$category_id == max_category_id)]
+    print(c(vector[1], number_movie))
+    ```
+
+    We can get from this method that sports is the most common genre and there are 74 movies in this genre.
+
+    **Method 2**: use a single SQL query to answer the question.
+
+    ```{r}
+    dbGetQuery(sakila, "SELECT category_id, c.name, COUNT(category_id)
+                    FROM film f
+                    JOIN film_category fc USING (film_id)
+                    JOIN category c USING (category_id)
+                    GROUP BY category_id, c.name
+                    ORDER BY COUNT(category_id) DESC
+                    LIMIT 1")
+    ```
+
+    With the second method, we can get the same conclusion as with the first method.
+
+c.  Identify which country or countries have exactly 9 customers.
+
+    **Method 1**: use SQL query or queries to extract the appropriate table(s), then use regular R to answer the question.
+
+    ```{r}
+    table_connected <-dbGetQuery(sakila, "SELECT *
+                                        FROM customer c
+                                        JOIN address a USING(address_id)
+                                        JOIN city ci USING(city_id)
+                                        JOIN country co 
+                                          ON co.country_id = ci.country_id
+                                        ")
+
+
+    country_freq <- table(table_connected$country)
+
+    country_9 <- names(country_freq[which(country_freq == 9)])
+    country_9
+    ```
+
+    The answer is "United Kingdom" with the first method.
+
+    **Method 2**: use a single SQL query to answer the question.
+
+    ```{r}
+    dbGetQuery(sakila, " SELECT country, co.country_id
+                          FROM customer c
+                          JOIN address a USING(address_id)
+                          JOIN city ci USING(city_id)
+                          JOIN country co ON co.country_id = ci.country_id
+                          GROUP BY country, co.country_id
+                          HAVING COUNT(customer_id) = 9")
+    ```
+
+    The answer is also "United Kingdom" with method 2.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
